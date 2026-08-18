@@ -26,9 +26,9 @@ kotlin {
     jvmToolchain(26)
 }
 
-val javadocJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("javadoc")
-    from(tasks.named("javadoc"))
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 publishing {
@@ -37,7 +37,6 @@ publishing {
             artifactId = "java"
             group = "xyz.baaad.machikado"
             version = version
-            artifact(javadocJar)
             from(components["java"])
             pom {
                 name.set("java")
