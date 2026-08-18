@@ -32,7 +32,7 @@ jobs:
           echo 'org.gradle.parallel=true' >> gradle.properties
           echo 'org.gradle.vfs.watch=true' >> gradle.properties
           echo 'org.gradle.jvmargs=-Xmx2048m' >> gradle.properties
-          ./gradlew publishApiPublicationToOssrhRepository
+          ./gradlew publishJavaPublicationToOssrhRepository
           ./gradlew --stop
           curl -X POST -H "Authorization: Bearer $(echo -n ${ORG_GRADLE_PROJECT_ossrhUsername}:${ORG_GRADLE_PROJECT_ossrhPassword} | base64)" https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/xyz.baaad.machikado
         env:
