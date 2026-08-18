@@ -191,7 +191,9 @@ if (!result.ok) {}
 
 Map source paths to signed paths — for when `customize.sh` moves files at install time.
 
-#### Java
+#### Load from all files
+
+##### Java
 
 ```java
 import java.util.Map;
@@ -206,13 +208,15 @@ mapping.insert("bin/zygiskd64", "bin/arm64-v8a/zygiskd");
 // Multiple pairs
 mapping.insert("bin/zygiskd32", "bin/armeabi-v7a/zygiskd");
 mapping.insert("lib/libzygisk.so", "lib/armeabi-v7a/libzygisk.so");
+mapping.insert("module.prop", null);
+mapping.insert("action.sh", null);
 
 // Iteration
 for (Map.Entry<String, String> entry : mapping.entrySet()) {
     System.out.println(entry.getKey() + " -> " + entry.getValue());
 }
 
-List<Utils.FileEntry> entries = Utils.loadFolderFiles(
+List<Sign.FileEntry> entries = Utils.loadFolderFiles(
         Paths.get("dir"),
         new String[]{},
         new String[]{},
@@ -220,14 +224,14 @@ List<Utils.FileEntry> entries = Utils.loadFolderFiles(
 );
 ```
 
-#### Kotlin
+##### Kotlin
 
 ```kotlin
 import java.util.Map
 import java.nio.file.Paths
 import xyz.baaad.machikado.Utils
 
-val mapping = FileMapping()
+val mapping = Utils.FileMapping()
 
 // Single pair
 mapping.insert("bin/zygiskd64", "bin/arm64-v8a/zygiskd")
@@ -235,6 +239,8 @@ mapping.insert("bin/zygiskd64", "bin/arm64-v8a/zygiskd")
 // Multiple pairs
 mapping.insert("bin/zygiskd32", "bin/armeabi-v7a/zygiskd")
 mapping.insert("lib/libzygisk.so", "lib/armeabi-v7a/libzygisk.so")
+mapping.insert("module.prop", null)
+mapping.insert("action.sh", null)
 
 // Iteration
 for (entry in mapping.entrySet()) {
@@ -249,6 +255,66 @@ val entries: MutableList<Utils.FileEntry> = Utils.loadFolderFiles(
 )
 ```
 
+#### Load from file mapping
+
+##### Java
+
+```java
+import java.util.Map;
+import java.nio.file.Paths;
+import xyz.baaad.machikado.Utils;
+
+Utils.FileMapping mapping = new Utils.FileMapping();
+
+// Single pair
+mapping.insert("bin/zygiskd64", "bin/arm64-v8a/zygiskd");
+
+// Multiple pairs
+mapping.insert("bin/zygiskd32", "bin/armeabi-v7a/zygiskd");
+mapping.insert("lib/libzygisk.so", "lib/armeabi-v7a/libzygisk.so");
+mapping.insert("module.prop", null);
+mapping.insert("action.sh", null);
+
+// Iteration
+for (Map.Entry<String, String> entry : mapping.entrySet()) {
+    System.out.println(entry.getKey() + " -> " + entry.getValue());
+}
+
+List<Sign.FileEntry> entries = Utils.loadFromMapping(
+        Paths.get("dir"),
+        mapping
+);
+```
+
+##### Kotlin
+
+```kotlin
+import java.util.Map
+import java.nio.file.Paths
+import xyz.baaad.machikado.Utils
+
+val mapping = Utils.FileMapping()
+
+// Single pair
+mapping.insert("bin/zygiskd64", "bin/arm64-v8a/zygiskd")
+
+// Multiple pairs
+mapping.insert("bin/zygiskd32", "bin/armeabi-v7a/zygiskd")
+mapping.insert("lib/libzygisk.so", "lib/armeabi-v7a/libzygisk.so")
+mapping.insert("module.prop", null)
+mapping.insert("action.sh", null)
+
+// Iteration
+for (entry in mapping.entrySet()) {
+    println(entry.key + " -> " + entry.value)
+}
+
+val entries: MutableList<Utils.FileEntry> = Utils.loadFromMapping(
+    Paths.get("dir"),
+    mapping
+)
+```
+
 ## API
 
 | Function | Returns |
@@ -259,6 +325,7 @@ val entries: MutableList<Utils.FileEntry> = Utils.loadFolderFiles(
 | `Sign.verify(byte[], byte[], List<FileEntry>, String, byte[])` | `Sign.VerifyResult` |
 | `Sign.verifyMachikado(byte[], List<FileEntry>, byte[])` | `Sign.VerifyResult` |
 | `Utils.loadFolderFiles(Path, List<String>, List<String>, FileMapping)` | `List<Sign.FileEntry>` |
+| `Utils.loadFromMapping(Path, FileMapping)` | `List<Sign.FileEntry>` |
 
 `SignedBlob` is a 96-byte newtype with `.asBytes()`, `.fromBytes()`, `.signature`, `.publicKey`.
 
